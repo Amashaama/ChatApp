@@ -11,12 +11,14 @@ import SignInScreen from "./src/screens/SignInScreen";
 import HomeScreen from "./src/screens/HomeScreen";
 import { ThemeProvider } from "./src/theme/ThemeProvider";
 import ContactScreen from "./src/screens/ContactScreen";
+import AvatarScreen from "./src/screens/AvatarScreen";
 
 export type RootStack = {
   SplashScreen: undefined;
  
   SignUpScreen: undefined;
   ContactScreen:undefined;
+  AvatarScreen:undefined;
    SignInScreen: undefined;
   HomeScreen: undefined;
   SettingScreen: undefined;
@@ -62,6 +64,8 @@ export default function App() {
           headerShown:false
         }}
         />
+
+        <Stack.Screen name="AvatarScreen" component={AvatarScreen} options={{headerShown:false}} />
 
         <Stack.Screen name="SignInScreen" component={SignInScreen} />
         <Stack.Screen name="HomeScreen" component={HomeScreen} />

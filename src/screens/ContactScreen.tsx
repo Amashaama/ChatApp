@@ -13,8 +13,16 @@ import { AntDesign } from "@expo/vector-icons";
 import { useState } from "react";
 import { CountryItem, CountryPicker } from "react-native-country-codes-picker";
 import { TextInput } from "react-native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RootStack } from "../../App";
+import { useNavigation } from "@react-navigation/native";
+
+type ContactProp = NativeStackNavigationProp<RootStack,"AvatarScreen">;
 
 export default function ContactScreen() {
+
+    const navigation = useNavigation<ContactProp>();
+
   const [show, setShow] = useState(false);
   const [countryCode, setCountryCode] = useState<CountryItem | null>(null);
 
@@ -78,9 +86,11 @@ export default function ContactScreen() {
             </View>
           </View>
 
-          <View className="absolute bg-red-100 bottom-4">
-            <Pressable>
-              <Text>Next</Text>
+          <View className="mt-20 w-full">
+            <Pressable className="justify-center items-center bg-green-600 w-fully h-14 rounded-full"
+            onPress={()=>{navigation.replace("AvatarScreen")}}
+            >
+              <Text className="text-xl font-bold text-slate-50">Next</Text>
             </Pressable>
           </View>
         </View>
