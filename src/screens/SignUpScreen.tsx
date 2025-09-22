@@ -15,8 +15,8 @@ import { FloatingLabelInput } from "react-native-floating-label-input";
 import { useState } from "react";
 
 export default function SignUpScreen() {
-  const [firstName,setFirstName] = useState("");
-  const [lastName,setLastName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const { applied } = useTheme();
 
   const logo =
@@ -27,7 +27,8 @@ export default function SignUpScreen() {
   return (
     <AlertNotificationRoot>
       <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        behavior={Platform.OS === "android" ? "padding" : "height"}
+        keyboardVerticalOffset={Platform.OS === "android" ? 100 : 100}
         className="flex-1 justify-center items-center dark:bg-slate-950"
       >
         <SafeAreaView className="justify-center items-center p-5">
@@ -41,30 +42,30 @@ export default function SignUpScreen() {
 
           <View className="self-stretch">
             <View className="w-full my-3">
-              <FloatingLabelInput style={{borderWidth:2, borderColor:"black"}}
-                  label={"Enter your first name"}
+              <FloatingLabelInput
+                style={{ borderWidth: 2, borderColor: "black" }}
+                label={"Enter your first name"}
                 value={firstName}
                 onChangeText={setFirstName}
-                />
+              />
             </View>
             <View className="w-full my-3">
-              <FloatingLabelInput style={{borderWidth:2, borderColor:"black"}}
-                  label={"Enter your last name"}
-                 value={lastName}
-                 onChangeText={setLastName}
-                />
+              <FloatingLabelInput
+                style={{ borderWidth: 2, borderColor: "black" }}
+                label={"Enter your last name"}
+                value={lastName}
+                onChangeText={setLastName}
+              />
             </View>
-            </View>
- </SafeAreaView>
-            <View className="absolute bottom-14 w-full p-5">
-              <Pressable className="bg-green-600 h-14 justify-center items-center rounded-full">
-                <Text className="text-slate-100 dark:text-slate-100 font-bold text-2xl">
-                 Next
-                </Text>
-              </Pressable>
-            </View>
-         
-       
+          </View>
+        </SafeAreaView>
+        <View className="absolute bottom-14 w-full p-5">
+          <Pressable className="bg-green-600 h-14 justify-center items-center rounded-full">
+            <Text className="text-slate-100 dark:text-slate-100 font-bold text-2xl">
+              Next
+            </Text>
+          </Pressable>
+        </View>
       </KeyboardAvoidingView>
     </AlertNotificationRoot>
   );
