@@ -41,10 +41,10 @@ export default function SplashScreen() {
 
   const {applied}=useTheme();
 
-  const logo= applied === "dark"?require("../../assets/lightLogo.png") :require("../../assets/logo.png");
+  const logo= applied === "light"?require("../../assets/logo.png") :require("../../assets/lightLogo.png");
 
   return (
-    <SafeAreaView className="flex-1 justify-center items-center bg-slate-50 dark:bg-slate-950">
+    <SafeAreaView className="flex-1 justify-center items-center bg-slate-50">
       <StatusBar hidden />
 
       <CircleShape
@@ -73,10 +73,10 @@ export default function SplashScreen() {
 
       <Animated.View className="absolute bottom-20" style={animatedStyle}>
         <View className="justify-center items-center">
-          <Text className="text-xs font-bold text-slate-600 dark:text-slate-200">
+          <Text className="text-xs font-bold text-slate-600">
             POWERED BY: {process.env.EXPO_PUBLIC_APP_OWNER}
           </Text>
-          <Text className="text-xs font-bold text-slate-600 dark:text-slate-200">
+          <Text className="text-xs font-bold text-slate-600">
             VERSION: {process.env.EXPO_PUBLIC_APP_VERSION}
           </Text>
         </View>

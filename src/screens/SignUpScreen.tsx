@@ -13,29 +13,36 @@ import { AlertNotificationRoot } from "react-native-alert-notification";
 import { useTheme } from "../theme/ThemeProvider";
 import { FloatingLabelInput } from "react-native-floating-label-input";
 import { useState } from "react";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RootStack } from "../../App";
+import { useNavigation } from "@react-navigation/native";
+
+type SignUpProps = NativeStackNavigationProp<RootStack,"SignUpScreen">;
 
 export default function SignUpScreen() {
+  const navigation = useNavigation<SignUpProps>();
+
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const { applied } = useTheme();
 
   const logo =
-    applied === "dark"
-      ? require("../../assets/lightLogo.png")
-      : require("../../assets/logo.png");
+    applied === "light"
+      ? require("../../assets/logo.png")
+      : require("../../assets/lightLogo.png");
 
   return (
     <AlertNotificationRoot>
       <KeyboardAvoidingView
         behavior={Platform.OS === "android" ? "padding" : "height"}
         keyboardVerticalOffset={Platform.OS === "android" ? 100 : 100}
-        className="flex-1 justify-center items-center dark:bg-slate-950"
+        className="flex-1 justify-center items-center"
       >
         <SafeAreaView className="justify-center items-center p-5">
           <StatusBar />
           <Image source={logo} className="h-40 w-36" />
           <View className="w-full justify-start items-start">
-            <Text className="font-bold text-slate-500 dark:text-slate-100">
+            <Text className="font-bold text-slate-500 ">
               Create your account and start the conversation today
             </Text>
           </View>
@@ -59,9 +66,13 @@ export default function SignUpScreen() {
             </View>
           </View>
         </SafeAreaView>
-        <View className="absolute bottom-14 w-full p-5">
-          <Pressable className="bg-green-600 h-14 justify-center items-center rounded-full">
-            <Text className="text-slate-100 dark:text-slate-100 font-bold text-2xl">
+        <View className="mt-1 w-full px-5">
+          <Pressable className="bg-green-600 h-14 justify-center items-center rounded-full"
+          onPress={()=>{
+            navigation.replace("ContactScreen");
+          }}
+          >
+            <Text className="text-slate-100  font-bold text-2xl">
               Next
             </Text>
           </Pressable>
