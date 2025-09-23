@@ -11,28 +11,31 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import "../../global.css";
 import { AntDesign } from "@expo/vector-icons";
 import { useState } from "react";
-import { CountryItem, CountryPicker } from "react-native-country-codes-picker";
+import CountryPicker, {
+  Country,
+  CountryCode,
+} from "react-native-country-picker-modal";
 import { TextInput } from "react-native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStack } from "../../App";
 import { useNavigation } from "@react-navigation/native";
 
-type ContactProp = NativeStackNavigationProp<RootStack,"AvatarScreen">;
+type ContactProp = NativeStackNavigationProp<RootStack, "ContactScreen">;
 
 export default function ContactScreen() {
+  const navigation = useNavigation<ContactProp>();
 
-    const navigation = useNavigation<ContactProp>();
-
-  const [show, setShow] = useState(false);
-  const [countryCode, setCountryCode] = useState<CountryItem | null>(null);
+  const [countryCode, setCountryCode] = useState<CountryCode>("LK");
+  const [country, setCountry] = useState<Country | null>(null);
+  const [show, setShow] = useState<boolean>(false);
 
   return (
     <SafeAreaView className="flex-1 bg-white items-center">
-      <StatusBar hidden={true} />
+      <StatusBar hidden={false} />
 
       <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        keyboardVerticalOffset={100}
+        behavior={Platform.OS === "android" ? "padding" : "height"}
+       
       >
         <View className="p-5 items-center">
           <Image
@@ -46,36 +49,38 @@ export default function ContactScreen() {
           </Text>
 
           <View className="mt-5 w-full">
-            <Pressable
-              className=" w-full justify-center items-center flex-row h-16 border-b-2 border-b-green-600"
-              onPress={() => setShow(true)}
-            >
-              <Text className="font-bold text-lg">Select country</Text>
-              <AntDesign
+            <View  className="border-b-2 border-b-green-600 justify-center items-center flex-row h-14 my-3 mb-3">
+              <CountryPicker
+                countryCode={countryCode}
+                withFilter
+                withFlag
+                withCountryNameButton
+                withCallingCode
+                visible={show}
+                onClose={() => {
+                  setShow(false);
+                }}
+                onSelect={(c) => {
+                  setCountryCode(c.cca2);
+                  setCountry(c);
+                  setShow(false);
+                }}
+              />
+               <AntDesign
                 name="caret-down"
                 size={20}
                 color="black"
-                style={{ marginTop: 5, marginLeft: 5 }}
+                style={{ marginTop: 5 }}
               />
-            </Pressable>
+            </View>
 
-            <CountryPicker
-              show={show}
-              lang="en"
-              pickerButtonOnPress={(item) => {
-                setCountryCode(item);
-                setShow(false);
-              }}
-              onBackdropPress={() => setShow(false)}
-              style={{
-                modal: { height: 400 },
-              }}
-            />
             <View className="mt-2 flex flex-row justify-center">
               <TextInput
                 inputMode="tel"
                 className="h-16 font-bold text-lg border-y-2 border-y-green-600 w-[18%]"
                 placeholder="+94"
+                editable={false}
+                value={country ? `+${country.callingCode}`:`+94`}
               />
 
               <TextInput
@@ -87,8 +92,11 @@ export default function ContactScreen() {
           </View>
 
           <View className="mt-20 w-full">
-            <Pressable className="justify-center items-center bg-green-600 w-fully h-14 rounded-full"
-            onPress={()=>{navigation.replace("AvatarScreen")}}
+            <Pressable
+              className="justify-center items-center bg-green-600 w-fully h-14 rounded-full"
+              onPress={() => {
+                navigation.replace("AvatarScreen");
+              }}
             >
               <Text className="text-xl font-bold text-slate-50">Next</Text>
             </Pressable>
