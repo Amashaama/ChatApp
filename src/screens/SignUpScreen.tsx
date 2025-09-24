@@ -9,21 +9,23 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import "../../global.css";
-import { AlertNotificationRoot } from "react-native-alert-notification";
+import { ALERT_TYPE, AlertNotificationRoot, Toast } from "react-native-alert-notification";
 import { useTheme } from "../theme/ThemeProvider";
 import { FloatingLabelInput } from "react-native-floating-label-input";
 import { useState } from "react";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStack } from "../../App";
 import { useNavigation } from "@react-navigation/native";
+import { useUserRegistration } from "../components/UserContext";
+import { validateFirstName, validateLastName } from "../util/validation";
+
 
 type SignUpProps = NativeStackNavigationProp<RootStack,"SignUpScreen">;
 
 export default function SignUpScreen() {
   const navigation = useNavigation<SignUpProps>();
 
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
+ 
   const { applied } = useTheme();
 
   const logo =
@@ -31,8 +33,12 @@ export default function SignUpScreen() {
       ? require("../../assets/logo.png")
       : require("../../assets/lightLogo.png");
 
+  const {userData,setUserData} = useUserRegistration();
+  const [firstName,setFirstName] = useState("");
+  const [lastName,setLastName]= useState("");
+
   return (
-    <AlertNotificationRoot>
+   
       <KeyboardAvoidingView
         behavior={Platform.OS === "android" ? "padding" : "height"}
         keyboardVerticalOffset={Platform.OS === "android" ? 100 : 100}
@@ -52,16 +58,31 @@ export default function SignUpScreen() {
               <FloatingLabelInput
                 style={{ borderWidth: 2, borderColor: "black" }}
                 label={"Enter your first name"}
-                value={firstName}
-                onChangeText={setFirstName}
+                value={userData.firstName}
+                onChangeText={(text)=>{
+
+                  setUserData((previous)=>({
+                      ...previous,
+                      firstName:text,
+
+                  }));
+
+                }}
+               
               />
             </View>
             <View className="w-full my-3">
               <FloatingLabelInput
                 style={{ borderWidth: 2, borderColor: "black" }}
                 label={"Enter your last name"}
-                value={lastName}
-                onChangeText={setLastName}
+                value={userData.lastName}
+                onChangeText={(text)=>{
+                  setUserData((previous)=>({
+                    ...previous,
+                    lastName:text,
+                  }));
+                }}
+                
               />
             </View>
           </View>
@@ -69,7 +90,27 @@ export default function SignUpScreen() {
         <View className="mt-1 w-full px-5">
           <Pressable className="bg-green-600 h-14 justify-center items-center rounded-full"
           onPress={()=>{
-            navigation.replace("ContactScreen");
+           
+           let validFirstName = validateFirstName(userData.firstName);
+           let validLastName = validateLastName(userData.lastName);
+
+           if(validFirstName){
+            Toast.show({
+              type:ALERT_TYPE.WARNING,
+              title:"Warning",
+              textBody:validFirstName,
+            });
+           }else if(validLastName){
+             Toast.show({
+              type:ALERT_TYPE.WARNING,
+              title:"Warning",
+              textBody:validLastName,
+            });
+           }else{
+            navigation.navigate("ContactScreen");
+           }
+           
+
           }}
           >
             <Text className="text-slate-100  font-bold text-2xl">
@@ -78,6 +119,6 @@ export default function SignUpScreen() {
           </Pressable>
         </View>
       </KeyboardAvoidingView>
-    </AlertNotificationRoot>
+   
   );
 }

@@ -19,6 +19,9 @@ import { TextInput } from "react-native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStack } from "../../App";
 import { useNavigation } from "@react-navigation/native";
+import { useUserRegistration } from "../components/UserContext";
+import { ALERT_TYPE, AlertNotificationRoot, Toast } from "react-native-alert-notification";
+import { validateCountryCode, validatePhoneNo } from "../util/validation";
 
 type ContactProp = NativeStackNavigationProp<RootStack, "ContactScreen">;
 
@@ -29,8 +32,14 @@ export default function ContactScreen() {
   const [country, setCountry] = useState<Country | null>(null);
   const [show, setShow] = useState<boolean>(false);
 
+  const {userData,setUserData} = useUserRegistration();
+
+  const [callingCode,setCallingCode] = useState("+94");
+  const [phoneNo,setPhoneNo] = useState("");
+
   return (
     <SafeAreaView className="flex-1 bg-white items-center">
+      
       <StatusBar hidden={false} />
 
       <KeyboardAvoidingView
@@ -64,6 +73,7 @@ export default function ContactScreen() {
                   setCountryCode(c.cca2);
                   setCountry(c);
                   setShow(false);
+                 
                 }}
               />
                <AntDesign
@@ -80,13 +90,21 @@ export default function ContactScreen() {
                 className="h-16 font-bold text-lg border-y-2 border-y-green-600 w-[18%]"
                 placeholder="+94"
                 editable={false}
-                value={country ? `+${country.callingCode}`:`+94`}
+                value={country? `+${country.callingCode}`:callingCode}
+                 onChangeText={(text)=>{
+                  setCallingCode(text);
+                 }}
+               
               />
 
               <TextInput
                 inputMode="tel"
                 className="h-16 font-bold text-lg border-y-2 border-y-green-600 w-[80%] ml-2"
                 placeholder="## ### ####"
+                value={phoneNo}
+                onChangeText={(text)=>{
+                  setPhoneNo(text);
+                }}
               />
             </View>
           </View>
@@ -95,7 +113,32 @@ export default function ContactScreen() {
             <Pressable
               className="justify-center items-center bg-green-600 w-fully h-14 rounded-full"
               onPress={() => {
-                navigation.replace("AvatarScreen");
+
+                const validCountryCode =validateCountryCode(callingCode);
+                const validPhoneNo = validatePhoneNo(phoneNo);
+
+                if(validCountryCode){
+                  Toast.show({
+                    type:ALERT_TYPE.WARNING,
+                    title:"Warning",
+                    textBody:validCountryCode
+                  });
+                }else if(validPhoneNo){
+                  Toast.show({
+                    type:ALERT_TYPE.WARNING,
+                    title:"Warning",
+                    textBody:validPhoneNo
+                  });
+                }else{
+                  navigation.replace("AvatarScreen");
+                }
+
+                setUserData((previous)=>({
+                  ...previous,
+                  countryCode:country? `+${country.callingCode}`:callingCode,
+                  contactNo:phoneNo,
+                }))
+                
               }}
             >
               <Text className="text-xl font-bold text-slate-50">Next</Text>
@@ -103,6 +146,7 @@ export default function ContactScreen() {
           </View>
         </View>
       </KeyboardAvoidingView>
+      
     </SafeAreaView>
   );
 }
