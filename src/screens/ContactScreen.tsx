@@ -21,7 +21,7 @@ import { RootStack } from "../../App";
 import { useNavigation } from "@react-navigation/native";
 import { useUserRegistration } from "../components/UserContext";
 import { ALERT_TYPE, AlertNotificationRoot, Toast } from "react-native-alert-notification";
-import { validateCountryCode, validatePhoneNo } from "../util/validation";
+import { validateCountryCode, validatePhoneNo } from "../util/Validation";
 
 type ContactProp = NativeStackNavigationProp<RootStack, "ContactScreen">;
 

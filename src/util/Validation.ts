@@ -1,19 +1,18 @@
-export const validateFirstName=(name:string):string|null=>{
 
+export const validateFirstName= (name:string):string|null=>{
     if(!name || name.trim().length ===0){
         return "First name is required";
     }
 
     return null;
-
 };
 
-export const validateLastName = (name:string):string|null=>{
-    if(!name || name.trim().length===0){
+export const validateLastName= (name:string):string|null=>{
+    if(!name || name.trim().length ===0){
         return "Last name is required";
     }
     return null;
-}
+};
 
 export const validateCountryCode = (countryCode:string):string | null=>{
     const regex= /^\+[1-9]\d{0,3}$/;
@@ -41,11 +40,13 @@ export const validatePhoneNo = (phoneNo:string):string|null=>{
     return null;
 }
 
-export const validateProfileImage = (image:{
+export const validateProfileImage = 
+(image:{
     uri:string;
     type?:string;
     fileSize?:number;
-}| null):string | null => {
+}| null
+):string | null => {
 
     if(!image){
         return "Profile image is required";

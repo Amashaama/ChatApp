@@ -17,7 +17,8 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStack } from "../../App";
 import { useNavigation } from "@react-navigation/native";
 import { useUserRegistration } from "../components/UserContext";
-import { validateFirstName, validateLastName } from "../util/validation";
+import { validateFirstName, validateLastName } from "../util/Validation";
+
 
 
 type SignUpProps = NativeStackNavigationProp<RootStack,"SignUpScreen">;
