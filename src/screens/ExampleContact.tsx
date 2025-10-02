@@ -1,177 +1,220 @@
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import {
   FlatList,
   Image,
-  Pressable,
-  StatusBar,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
+  StatusBar,
 } from "react-native";
+import { RootStack } from "../../App";
+import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import * as ImagePicker from "expo-image-picker";
-import { useState } from "react";
-import { AntDesign } from "@expo/vector-icons";
+import { useLayoutEffect, useState } from "react";
+import AntDesign from "@expo/vector-icons/AntDesign";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
-export default function AvatarScreen() {
-  const [image, setImage] = useState<string | null>(null);
-  const [selectedAvatar, setSelectedAvatar] = useState<number | null>(null);
+const chats = [
+  {
+    id: 1,
+    name: "Sahan Perera",
+    lastMessage: "Hello, Sahan",
+    time: "9:46 a.m",
+    unread: 2,
+    profile: require("../../assets/avatar/avatar_1.png"),
+  },
+  {
+    id: 2,
+    name: "Kamal Perera",
+    lastMessage: "Hello, Kamal",
+    time: "yesterday",
+    unread: 1,
+    profile: require("../../assets/avatar/avatar_2.png"),
+  },
+  {
+    id: 3,
+    name: "Amandi Kawya",
+    lastMessage: "Hello, Amandi",
+    time: "10:46 p.m",
+    unread: 2,
+    profile: require("../../assets/avatar/avatar_3.png"),
+  },
+  {
+    id: 4,
+    name: "Kusum Ravidn",
+    lastMessage: "Hello, kusum",
+    time: "3:05 p.m",
+    unread: 4,
+    profile: require("../../assets/avatar/avatar_4.png"),
+  },
+  {
+    id: 5,
+    name: "Imasha Minoli",
+    lastMessage: "Hello, mino",
+    time: "2025/09/20",
+    unread: 2,
+    profile: require("../../assets/avatar/avatar_5.png"),
+  },
+  {
+    id: 6,
+    name: "Dinithi Sahanika",
+    lastMessage: "Hello, dini",
+    time: "9:46 a.m",
+    unread: 0,
+    profile: require("../../assets/avatar/avatar_6.png"),
+  },
+];
 
-  const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ["images"],
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 1,
+type HomeScreenProps = NativeStackNavigationProp<RootStack, "HomeScreen">;
+
+export default function HomeScreen() {
+  const navigation = useNavigation<HomeScreenProps>();
+  const [search, setSearch] = useState("");
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      title: "ChatApp",
+      headerTitleStyle: { 
+        fontWeight: "bold", 
+        color: "#0f172a", // slate-950
+        fontSize: 20 
+      },
+      headerStyle: {
+        backgroundColor: "#ffffff", // white
+      },
+      headerTintColor: "#0f172a", // slate-950
+      headerRight: () => (
+        <View className="flex-row space-x-4 mr-2">
+          <TouchableOpacity className="p-2 rounded-full bg-yellow-400/20">
+            <AntDesign name="camera" size={22} color="#0f172a" />
+          </TouchableOpacity>
+          <TouchableOpacity className="p-2 rounded-full bg-yellow-400/20">
+            <MaterialIcons name="more-vert" size={22} color="#0f172a" />
+          </TouchableOpacity>
+        </View>
+      ),
     });
+  }, [navigation]);
 
-    if (!result.canceled) {
-      setImage(result.assets[0].uri);
-      setSelectedAvatar(null); // Clear avatar selection when image is picked
-    }
-  };
+  const filteredChats = chats.filter((chat) => {
+    return (
+      chat.name.toLowerCase().includes(search.toLowerCase()) ||
+      chat.lastMessage.toLowerCase().includes(search.toLowerCase())
+    );
+  });
 
-  const avatars = [
-    require("../../assets/avatar/avatar_1.png"),
-    require("../../assets/avatar/avatar_2.png"),
-    require("../../assets/avatar/avatar_3.png"),
-    require("../../assets/avatar/avatar_4.png"),
-    require("../../assets/avatar/avatar_5.png"),
-    require("../../assets/avatar/avatar_6.png"),
-  ];
-
-  const selectAvatar = (item: any, index: number) => {
-    setImage(Image.resolveAssetSource(item).uri);
-    setSelectedAvatar(index);
-  };
-
-  return (
-    <SafeAreaView className="bg-slate-950 flex-1">
-      <StatusBar hidden={false} backgroundColor="#0f172a" barStyle="light-content" />
-      
-      <View className="flex-1 items-center px-6">
-        {/* Logo Section */}
-        <View className="mt-8 mb-8">
-          <Image
-            source={require("../../assets/chattyLogo.png")}
-            className="h-36 w-32"
+  const renderItem = ({ item }: any) => (
+    <TouchableOpacity className="mx-4 mb-3 bg-white rounded-2xl p-4 border border-yellow-400/30 shadow-lg">
+      <View className="flex-row items-center">
+        <View className="relative">
+          <Image 
+            source={item.profile} 
+            className="h-16 w-16 rounded-full border-2 border-yellow-400/40" 
           />
+          <View className="absolute -bottom-1 -right-1 bg-green-500 rounded-full w-4 h-4 border-2 border-white" />
         </View>
-
-        {/* Header Text */}
-        <View className="items-center mb-8">
-          <Text className="font-bold text-xl text-amber-200 text-center mb-2">
-            Complete Your Profile
-          </Text>
-          <Text className="text-slate-300 text-sm text-center px-4 leading-5">
-            Choose a profile image or select from our avatar collection
-          </Text>
-        </View>
-
-        {/* Profile Image Section */}
-        <View className="items-center mb-6">
-          <Pressable
-            className="h-32 w-32 rounded-full bg-stone-900 justify-center items-center border-3 border-yellow-400 border-dashed shadow-lg relative"
-            onPress={pickImage}
-          >
-            {image ? (
-              <>
-                <Image
-                  source={{ uri: image }}
-                  className="h-32 w-32 rounded-full"
-                />
-                {/* Edit overlay */}
-                <View className="absolute bottom-0 right-0 bg-yellow-400 rounded-full p-2 border-2 border-slate-950">
-                  <AntDesign name="edit" size={16} color="#0f172a" />
-                </View>
-              </>
-            ) : (
-              <View className="items-center">
-                <View className="bg-yellow-400 rounded-full p-3 mb-2">
-                  <AntDesign name="camera" size={24} color="#0f172a" />
-                </View>
-                <Text className="font-bold text-sm text-amber-200">
-                  Add Photo
+        
+        <View className="flex-1 ml-4">
+          <View className="flex-row justify-between items-start mb-1">
+            <Text 
+              className="font-bold text-lg text-slate-950" 
+              numberOfLines={1}
+              ellipsizeMode="tail"
+            >
+              {item.name}
+            </Text>
+            <Text className="font-medium text-xs text-slate-500">
+              {item.time}
+            </Text>
+          </View>
+          
+          <View className="flex-row justify-between items-center">
+            <Text 
+              className="text-slate-600 flex-1 text-sm"
+              numberOfLines={1}
+              ellipsizeMode="tail"
+            >
+              {item.lastMessage}
+            </Text>
+            {item.unread > 0 && (
+              <View className="bg-yellow-400 rounded-full px-2.5 py-1 ml-3 shadow-md">
+                <Text className="font-bold text-xs text-slate-950">
+                  {item.unread}
                 </Text>
               </View>
             )}
-          </Pressable>
+          </View>
         </View>
+      </View>
+    </TouchableOpacity>
+  );
 
-        {/* Divider */}
-        <View className="flex-row items-center w-full max-w-sm mb-6">
-          <View className="flex-1 h-px bg-stone-700" />
-          <Text className="text-slate-400 text-sm mx-4 font-medium">OR</Text>
-          <View className="flex-1 h-px bg-stone-700" />
-        </View>
-
-        {/* Avatar Selection */}
-        <View className="items-center mb-6">
-          <Text className="text-lg mb-3 text-amber-200 font-bold">
-            Select an Avatar
-          </Text>
-          
-          <View className="bg-stone-900 rounded-3xl p-3 border border-yellow-400/30 shadow-lg w-full max-w-sm">
-            <FlatList
-              data={avatars}
-              horizontal
-              keyExtractor={(_, index) => index.toString()}
-              renderItem={({ item, index }) => (
-                <TouchableOpacity
-                  onPress={() => selectAvatar(item, index)}
-                  className="mx-1"
-                >
-                  <View className={`rounded-full p-1 ${
-                    selectedAvatar === index 
-                      ? 'bg-yellow-400 shadow-lg shadow-yellow-400/50' 
-                      : 'bg-transparent'
-                  }`}>
-                    <Image
-                      source={item}
-                      className="h-14 w-14 rounded-full"
-                    />
-                  </View>
-                  {selectedAvatar === index && (
-                    <View className="absolute -top-1 -right-1 bg-yellow-400 rounded-full p-1">
-                      <AntDesign name="check" size={10} color="#0f172a" />
-                    </View>
-                  )}
-                </TouchableOpacity>
-              )}
-              contentContainerStyle={{ paddingHorizontal: 4, justifyContent: 'center' }}
-              showsHorizontalScrollIndicator={false}
+  return (
+    <SafeAreaView
+      className="flex-1 bg-gray-50"
+      edges={["right", "bottom", "left"]}
+    >
+        {/* Search Bar */}
+        <View className="mx-4 mt-10 mb-4">
+          <View className="flex-row items-center bg-white border border-yellow-400/50 px-4 py-3 rounded-xl shadow-md">
+            <Ionicons name="search" size={20} color="#f59e0b" />
+            <TextInput
+              className="flex-1 text-base font-medium text-slate-950 ml-3"
+              placeholder="Search conversations..."
+              placeholderTextColor="#64748b"
+              value={search}
+              onChangeText={setSearch}
             />
+            {search.length > 0 && (
+              <TouchableOpacity 
+                onPress={() => setSearch("")}
+                className="p-1"
+              >
+                {/* <AntDesign name="closecircle" size={16} color="#64748b" /> */}
+              </TouchableOpacity>
+            )}
           </View>
         </View>
 
-        {/* Spacer */}
-        <View className="flex-1 min-h-4" />
-
-        {/* Create Account Button */}
-        <View className="w-full max-w-sm mb-8">
-          <Pressable 
-            className={`h-14 rounded-full items-center justify-center shadow-lg ${
-              image 
-                ? 'bg-yellow-400 shadow-yellow-400/25' 
-                : 'bg-stone-700'
-            }`}
-            disabled={!image}
-          >
-            <Text className={`font-bold text-lg ${
-              image 
-                ? 'text-stone-900' 
-                : 'text-slate-500'
-            }`}>
-              Create Account
-            </Text>
-          </Pressable>
-          
-          {!image && (
-            <Text className="text-slate-400 text-xs text-center mt-2">
-              Please select a profile image to continue
-            </Text>
+        {/* Chat List */}
+        <View className="flex-1 mt-2">
+          {filteredChats.length > 0 ? (
+            <FlatList 
+              data={filteredChats} 
+              renderItem={renderItem}
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={{ paddingBottom: 100 }}
+            />
+          ) : (
+            <View className="flex-1 justify-center items-center">
+              <View className="bg-gray-100 rounded-full p-6 mb-4 border border-yellow-400/20">
+                <Ionicons name="chatbubbles-outline" size={48} color="#f59e0b" />
+              </View>
+              <Text className="text-slate-500 text-base font-medium">
+                No conversations found
+              </Text>
+            </View>
           )}
         </View>
-      </View>
-    </SafeAreaView>
+
+        {/* Floating Action Button */}
+        <View className="absolute bottom-6 right-6">
+          <TouchableOpacity 
+            className="bg-yellow-400 h-16 w-16 rounded-full justify-center items-center shadow-xl border-2 border-yellow-300"
+            style={{
+              shadowColor: "#f59e0b",
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.3,
+              shadowRadius: 8,
+              elevation: 8,
+            }}
+          >
+            <Ionicons name="add" size={28} color="#0f172a" />
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
   );
 }
