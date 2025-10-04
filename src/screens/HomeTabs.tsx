@@ -21,7 +21,7 @@ export default function HomeTabs() {
         tabBarActiveTintColor: "#16a34a",
         tabBarInactiveTintColor: "#9ce3af",
         tabBarStyle: {
-          height: 90,
+          height: 100,
           backgroundColor: "#fff",
           paddingTop: 1
         }

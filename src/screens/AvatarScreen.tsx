@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as ImagePicker from "expo-image-picker";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useUserRegistration } from "../components/UserContext";
 import { validateProfileImage } from "../util/Validation";
 import { ALERT_TYPE, Toast } from "react-native-alert-notification";
@@ -19,6 +19,7 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStack } from "../../App";
 import { useNavigation } from "@react-navigation/native";
 import { styles } from "react-native-floating-label-input/src/styles";
+import { AuthContext } from "../components/AuthProvider";
 
 type AvatarScreenProps = NativeStackNavigationProp<RootStack, "AvatarScreen">;
 
@@ -56,6 +57,8 @@ export default function AvatarScreen() {
     require("../../assets/avatar/avatar_5.png"),
     require("../../assets/avatar/avatar_6.png"),
   ];
+
+  const auth= useContext(AuthContext);
 
   return (
     <SafeAreaView className="bg-white flex-1">
@@ -143,7 +146,14 @@ export default function AvatarScreen() {
                   setLoading(true);
                   const response = await createNewAccount(userData);
                   if (response.status) {
-                    navigation.replace("HomeScreen");
+                    const id= response.userId;
+                    console.log(id);
+                    if(auth){
+                    await auth.signUp(String(id));
+                      // navigation.replace("HomeScreen");
+                    }
+                    
+                  
                   } else {
                     Toast.show({
                       type: ALERT_TYPE.WARNING,

@@ -1,28 +1,28 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { colorScheme, useColorScheme } from "nativewind";
 import React, { createContext, useContext, useEffect, useState } from "react";
-
 import { ActivityIndicator } from "react-native";
 
 export type ThemeOption = "light" | "dark" | "system";
+
 const THEME_KEY = "@app_color_scheme";
 
 type ThemeContextType = {
   preference: ThemeOption;
-  applied: "light" | "dark";
-  setPrefernce: (themeOption: ThemeOption) => Promise<void>;
+  applied: "light" | "dark"; // use on runtime
+  setPreference: (themeOption: ThemeOption) => Promise<void>;
 };
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const { colorScheme, setColorScheme } = useColorScheme();
-  const [getPreferenceState, setPreferenceState] = useState<ThemeOption>("system");
-
+  const [getPreferenceState, setPreferenceState] =
+    useState<ThemeOption>("system");
   const [isReady, setReady] = useState(false);
 
   useEffect(() => {
-   ( async () => {
+    (async () => {
       try {
         const savedTheme = await AsyncStorage.getItem(THEME_KEY);
         if (savedTheme === "light" || savedTheme === "dark") {
@@ -33,14 +33,14 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
           setColorScheme("system");
         }
       } catch (error) {
-        console.warn("failed to load theme: " + error);
+        console.warn("Failed to load theme: " + error);
       } finally {
         setReady(true);
       }
     })();
   }, [setColorScheme]);
 
-  const setPrefernce = async (themeOption: ThemeOption) => {
+  const setPreference = async (themeOption: ThemeOption) => {
     try {
       if (themeOption === "system") {
         await AsyncStorage.removeItem(THEME_KEY);
@@ -63,9 +63,9 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   return (
     <ThemeContext.Provider
       value={{
-        preference:getPreferenceState,
+        preference: getPreferenceState,
         applied: colorScheme ?? "light",
-        setPrefernce,
+        setPreference,
       }}
     >
       {children}
@@ -73,13 +73,10 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function useTheme(){
+export function useTheme() {
   const ctx = useContext(ThemeContext);
-
-  if(!ctx){
+  if (!ctx) {
     throw new Error("useTheme must be used inside ThemeProvider");
   }
-
   return ctx;
-
 }

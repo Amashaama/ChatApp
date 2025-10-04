@@ -1,4 +1,6 @@
+import { useContext } from "react";
 import { UserRegistrationData } from "../components/UserContext";
+import { AuthContext } from "../components/AuthProvider";
 
 const API = process.env.EXPO_PUBLIC_APP_URL + "/ChatApp";
 
@@ -25,5 +27,25 @@ export const createNewAccount = async (
     return json;
   } else {
     return "User Account creation failed";
+  }
+};
+
+export const uploadProfileImage = async (userId:string, imageUri: string) => {
+  let formData = new FormData();
+  formData.append("userId", userId);
+  formData.append("profileImage", {
+    uri: imageUri,
+    type: "image/png", // change if PNG
+    name: "profile.png",
+  } as any);
+
+  const response = await fetch(API + "/ProfileController", {
+    method: "POST",
+    body: formData,
+  });
+  if (response.ok) {
+    return await response.json();
+  } else {
+    console.warn("Profile image uploading failed!");
   }
 };

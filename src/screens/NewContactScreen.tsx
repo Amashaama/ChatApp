@@ -1,11 +1,5 @@
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import {
-  Pressable,
-  StatusBar,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Pressable, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { RootStack } from "../../App";
 import { useNavigation } from "@react-navigation/native";
@@ -29,7 +23,6 @@ type NewContactScreenProp = NativeStackNavigationProp<
   RootStack,
   "NewContactScreen"
 >;
-
 export default function NewContactScreen() {
   const navigation = useNavigation<NewContactScreenProp>();
   useLayoutEffect(() => {
@@ -50,15 +43,13 @@ export default function NewContactScreen() {
           </View>
         </View>
       ),
-      headerRight: () => <View></View>,
     });
   }, [navigation]);
 
-  const [countryCode, setCountryCode] = useState<CountryCode>("LK");
+  const [countryCode, setCountryCode] = useState<CountryCode>("LK"); // default country code
   const [country, setCountry] = useState<Country | null>(null);
   const [show, setShow] = useState<boolean>(false);
   const [callingCode, setCallingCode] = useState("+94");
-
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [phoneNo, setPhoneNo] = useState("");
@@ -72,34 +63,29 @@ export default function NewContactScreen() {
       id: 0,
       firstName: firstName,
       lastName: lastName,
-      countryCode: countryCode,
+      countryCode: callingCode,
       contactNo: phoneNo,
       createdAt: "",
       updatedAt: "",
       status: "",
     });
-
     setFirstName("");
     setLastName("");
-    setCallingCode("");
+    setCallingCode("+94");
     setPhoneNo("");
-
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-red-50">
-      <StatusBar hidden={false} translucent={true} />
+    <SafeAreaView className="flex-1 bg-white">
       <View className="flex-1 px-5">
-        <View className="flex-row items-center gap-x-2 mt-2 h-14">
+        <View className="flex-row items-center gap-x-2  h-14">
           <Feather name="user" size={24} color="black" />
           <View className="flex-1 h-14">
             <FloatingLabelInput
               label="First Name"
               className=""
               value={firstName}
-              onChangeText={(text) => {
-                setFirstName(text);
-              }}
+              onChangeText={(text) => setFirstName(text)}
             />
           </View>
         </View>
@@ -110,13 +96,11 @@ export default function NewContactScreen() {
               label="Last Name"
               className=""
               value={lastName}
-              onChangeText={(text) => {
-                setLastName(text);
-              }}
+              onChangeText={(text) => setLastName(text)}
             />
           </View>
         </View>
-        <View className="border-b-2 border-b-sky-800 justify-center items-center flex-row h-14 my-3 mb-3">
+        <View className="border-b-2 border-b-sky-800 justify-center items-center flex-row h-14 mt-8">
           <CountryPicker
             countryCode={countryCode}
             withFilter
@@ -135,7 +119,7 @@ export default function NewContactScreen() {
           />
           <AntDesign
             name="caret-down"
-            size={20}
+            size={18}
             color="black"
             style={{ marginTop: 5 }}
           />
@@ -145,7 +129,7 @@ export default function NewContactScreen() {
           <View className="h-14 items-center justify-center px-2 w-28 max-w-28">
             <FloatingLabelInput
               label=""
-              editable={true}
+              editable={false}
               value={country ? `+${country.callingCode}` : callingCode}
               onChangeText={(text) => {
                 setCallingCode(text);
@@ -162,15 +146,15 @@ export default function NewContactScreen() {
             />
           </View>
         </View>
-
-        <View className="mt-5">
+        <View className="mt-10">
           <Pressable
             className="bg-green-600 h-14 items-center justify-center rounded-full"
             onPress={() => {
               const firstNameValid = validateFirstName(firstName);
               const lastNameValid = validateLastName(lastName);
-              const countryCodeValid =validateCountryCode(callingCode);
+              const countryCodeValid = validateCountryCode(callingCode);
               const phoneNoValid = validatePhoneNo(phoneNo);
+
               if (firstNameValid) {
                 Toast.show({
                   type: ALERT_TYPE.WARNING,
@@ -201,7 +185,7 @@ export default function NewContactScreen() {
             }}
           >
             <Text className="font-bold text-lg text-slate-100">
-              Save contact
+              Save Contact
             </Text>
           </Pressable>
         </View>

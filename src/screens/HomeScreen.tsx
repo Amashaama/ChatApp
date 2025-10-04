@@ -2,6 +2,8 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import {
   FlatList,
   Image,
+  Modal,
+  Pressable,
   StatusBar,
   Text,
   TextInput,
@@ -11,13 +13,15 @@ import {
 import { RootStack } from "../../App";
 import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useLayoutEffect, useState } from "react";
+import { useContext, useLayoutEffect, useState } from "react";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useChatList } from "../socket/UseChatList";
 import { formatChatTime } from "../util/DateFormatter";
 import { Chat } from "../socket/chat";
+import { AuthContext } from "../components/AuthProvider";
+import { updateCSSTransition } from "react-native-reanimated/lib/typescript/css/native";
 
 type HomeScreenProps = NativeStackNavigationProp<RootStack, "HomeScreen">;
 
@@ -27,6 +31,12 @@ export default function HomeScreen() {
 
   const chatList = useChatList();
 
+  const [isModalVisible, setModalVisible] = useState(false);
+
+  const auth = useContext(AuthContext);
+
+  const { signOut ,isLoading} = useContext(AuthContext)!;
+  
   useLayoutEffect(() => {
     navigation.setOptions({
       title: "ChatApp",
@@ -36,14 +46,75 @@ export default function HomeScreen() {
           <TouchableOpacity className="me-5">
             <AntDesign name="camera" size={24} color="black" />
           </TouchableOpacity>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => setModalVisible(true)}>
             <Ionicons name="ellipsis-vertical" size={24} color="black" />
           </TouchableOpacity>
+          <Modal
+            animationType="fade"
+            visible={isModalVisible}
+            transparent={true}
+            onRequestClose={() => setModalVisible(false)}
+          >
+            <Pressable
+              className="flex-1 bg-transparent"
+              onPress={() => {
+                setModalVisible(false); // modal close when press outside
+              }}
+            >
+              <Pressable
+                onPress={(e) => {
+                  e.stopPropagation(); //prevent modal close inside of themodal
+                }}
+              >
+                <View
+                  className="justify-end items-end p-5"
+                  style={{
+                    shadowColor: "#000",
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.25,
+                    shadowRadius: 3.84,
+                    elevation: 5,
+                  }}
+                >
+                  <View className="bg-red-100 rounded-md w-72 p-3">
+                    <TouchableOpacity
+                      className="h-14 my-2 justify-center items-start border-b-2 border-b-gray-100"
+                      onPress={() => {
+                        navigation.navigate("SettingScreen");
+                        setModalVisible(false);
+                      }}
+                    >
+                      <Text className="font-bold text-lg">Settings</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      className="h-14 my-2 justify-center items-start border-b-2 border-b-gray-100"
+                      onPress={() => {
+                        navigation.navigate("ProfileScreen");
+                        setModalVisible(false);
+                      }}
+                    >
+                      <Text className="font-bold text-lg">My Profile</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      className="h-14 my-2 justify-center items-start border-b-2 border-b-gray-100"
+                      onPress={async () => {
+                      
+                        await signOut();
+                        setModalVisible(false);
+                      }}
+                    >
+                      <Text className="font-bold text-lg">Sign Out</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </Pressable>
+            </Pressable>
+          </Modal>
         </View>
       ),
       contentStyle: { marginBottom: 0 },
     });
-  }, [navigation]);
+  }, [navigation, isModalVisible]);
 
   const filterdChats = [...chatList]
     .filter((chat) => {
@@ -58,7 +129,7 @@ export default function HomeScreen() {
         new Date(a.lastTimeStamp).getTime()
     );
 
-  const renderItem = ({ item }: {item:Chat}) => (
+  const renderItem = ({ item }: { item: Chat }) => (
     <TouchableOpacity
       className="flex-row items-center py-2 px-3 bg-gray-50 my-0.5"
       onPress={() => {
@@ -67,8 +138,8 @@ export default function HomeScreen() {
           friendName: item.friendName,
           lastSeenTime: formatChatTime(item.lastTimeStamp),
           profileImage: item.profileImage
-          ?item.profileImage
-          : `https://ui-avatars.com/api/?name=${item.friendName.replace(
+            ? item.profileImage
+            : `https://ui-avatars.com/api/?name=${item.friendName.replace(
                 " ",
                 "+"
               )}&background=random`,

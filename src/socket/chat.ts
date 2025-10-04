@@ -19,13 +19,13 @@ export interface Chat{
     lastTimeStamp:string;
     unreadCount:number;
     profileImage:string;
-     message:string;
-    
     from:User;
     to:User;
     createdAt:string;
     updatedAt:string;
-    status:string ;
+    status:string;
+     message:string;
+    
 
 }
 

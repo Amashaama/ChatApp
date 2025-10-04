@@ -14,23 +14,30 @@ import { RootStack } from "../../App";
 import { runOnJS } from "react-native-worklets";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTheme } from "../theme/ThemeProvider";
+import { useWebSocketPing } from "../socket/UseWebSocketPing";
 
 type Props = NativeStackNavigationProp<RootStack, "SplashScreen">;
 
 export default function SplashScreen() {
+ 
   const navigation = useNavigation<Props>();
 
   const opacity = useSharedValue(0);
 
-  useEffect(() => {
-    opacity.value = withTiming(1, { duration: 3000 });
-    const timer = setTimeout(() => {
-      navigation.navigate("SignUpScreen");
-    }, 3000);
+  useWebSocketPing(6000);
 
-    return()=>{
-      clearTimeout(timer);
-    };
+  useEffect(() => {
+     
+    opacity.value = withTiming(1, { duration: 3000 });
+    // const timer = setTimeout(() => {
+    //   navigation.navigate("SignUpScreen");
+    // }, 3000);
+
+    // return()=>{
+    //   clearTimeout(timer);
+    // };
+
+    
   }, [navigation,opacity]);
 
   const animatedStyle = useAnimatedStyle(() => {

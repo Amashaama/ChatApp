@@ -19,6 +19,9 @@ import SingleChatScreen from "./src/screens/SingleChatScreen";
 import { WebSocketProvider } from "./src/socket/WebSocketProvider";
 import NewChatScreen from "./src/screens/NewChatScreen";
 import NewContactScreen from "./src/screens/NewContactScreen";
+import { useWebSocketPing } from "./src/socket/UseWebSocketPing";
+import { AuthContext, AuthProvider } from "./src/components/AuthProvider";
+import { useContext } from "react";
 
 export type RootStack = {
   SplashScreen: undefined;
@@ -37,83 +40,107 @@ export type RootStack = {
     lastSeenTime: string;
     profileImage: string;
   };
- NewChatScreen:undefined;
- NewContactScreen:undefined;
+  NewChatScreen: undefined;
+  NewContactScreen: undefined;
 };
 
-
-
 const Stack = createNativeStackNavigator<RootStack>();
-export const USER_ID=3;
-export default function App() {
- 
+
+function ChatApp() {
+  
+  const auth = useContext(AuthContext);
   return (
-    <AlertNotificationRoot>
-      <WebSocketProvider userId={USER_ID}>
+    <WebSocketProvider userId={auth ? Number(auth.userId):0}>
       <ThemeProvider>
         <UserRegistrationProvider>
           <NavigationContainer>
             <Stack.Navigator
-              initialRouteName="NewChatScreen"
+              initialRouteName="SplashScreen"
               screenOptions={{
                 animation: "fade",
               }}
             >
-              <Stack.Screen
-                name="SplashScreen"
-                component={SplashScreen}
-                options={{
-                  headerShown: false,
-                }}
-              />
+              {auth?.isLoading ? (
+                <Stack.Screen name="SplashScreen" component={SplashScreen}
+                  options={{
+                    headerShown: false,
+                  }}
+                />
+              ) : auth?.userId === null ? (
+               
+                <Stack.Group>
+                  <Stack.Screen
+                    name="SignUpScreen"
+                    component={SignUpScreen}
+                    options={{
+                      headerShown: false,
+                    }}
+                  />
 
-              <Stack.Screen
-                name="SignUpScreen"
-                component={SignUpScreen}
-                options={{
-                  headerShown: false,
-                }}
-              />
+                  <Stack.Screen
+                    name="ContactScreen"
+                    component={ContactScreen}
+                    options={{
+                      headerShown: false,
+                    }}
+                  />
 
-              <Stack.Screen
-                name="ContactScreen"
-                component={ContactScreen}
-                options={{
-                  headerShown: false,
-                }}
-              />
+                  <Stack.Screen
+                    name="AvatarScreen"
+                    component={AvatarScreen}
+                    options={{ headerShown: false }}
+                  />
 
-              <Stack.Screen
-                name="AvatarScreen"
-                component={AvatarScreen}
-                options={{ headerShown: false }}
-              />
+                  <Stack.Screen
+                    name="SignInScreen"
+                    component={SignInScreen}
+                    options={{ headerShown: false }}
+                  />
+                </Stack.Group>
+              ) : (
+                <Stack.Group>
+                  <Stack.Screen
+                    name="HomeScreen"
+                    component={HomeTabs}
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="SingleChatScreen"
+                    component={SingleChatScreen}
+                  />
 
-              <Stack.Screen
-                name="SignInScreen"
-                component={SignInScreen}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="HomeScreen"
-                component={HomeTabs}
-                options={{ headerShown: false }}
-              />
-               <Stack.Screen
-                name="SingleChatScreen"
-                component={SingleChatScreen}
-                
-              />
-              <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
-               <Stack.Screen name="SettingScreen" component={SettingScreen} />
-                <Stack.Screen name="NewChatScreen" component={NewChatScreen} />
-                <Stack.Screen name="NewContactScreen" component={NewContactScreen}/>
-             
+                  <Stack.Screen
+                    name="NewChatScreen"
+                    component={NewChatScreen}
+                  />
+                  <Stack.Screen
+                    name="NewContactScreen"
+                    component={NewContactScreen}
+                  />
+                  <Stack.Screen
+                    name="SettingScreen"
+                    component={SettingScreen}
+                  />
+                  <Stack.Screen
+                    name="ProfileScreen"
+                    component={ProfileScreen}
+                  />
+                </Stack.Group>
+              )}
             </Stack.Navigator>
           </NavigationContainer>
         </UserRegistrationProvider>
       </ThemeProvider>
-      </WebSocketProvider>
+    </WebSocketProvider>
+  );
+}
+
+export default function App() {
+  return (
+    <AlertNotificationRoot>
+      <AuthProvider>
+        <ChatApp />
+      </AuthProvider>
     </AlertNotificationRoot>
   );
 }
